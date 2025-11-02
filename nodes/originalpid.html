@@ -1,0 +1,95 @@
+<script type="text/javascript">
+RED.nodes.registerType('originalpid', {
+    category: 'function',
+    color: '#54abff',
+    defaults: {
+        name: { value: "PID" },
+        Kp: { value: 1.0, validate: RED.validators.number() },
+        Ki: { value: 0.0, validate: RED.validators.number() },
+        Kd: { value: 0.0, validate: RED.validators.number() },
+        sampleTime: { value: 100, validate: RED.validators.number() },
+        setpoint: { value: 0.0, validate: RED.validators.number() },
+        outMin: { value: 0.0, validate: RED.validators.number() },
+        outMax: { value: 1.0, validate: RED.validators.number() }
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "font-awesome/fa-dashboard",
+    label: function() {
+        let label = this.name || "PID";
+        label += ` T=${this.setpoint}`;
+        return label;
+    },
+    labelStyle: function() {
+        return this.name ? "node_label_italic" : "";
+    }
+});
+</script>
+
+<script type="text/html" data-template-name="originalpid">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-Kp"><i class="fa fa-sliders"></i> Kp</label>
+        <input type="text" id="node-input-Kp">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-Ki"><i class="fa fa-sliders"></i> Ki</label>
+        <input type="text" id="node-input-Ki">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-Kd"><i class="fa fa-sliders"></i> Kd</label>
+        <input type="text" id="node-input-Kd">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-sampleTime"><i class="fa fa-clock-o"></i> Sample Time (ms)</label>
+        <input type="text" id="node-input-sampleTime">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-setpoint"><i class="fa fa-bullseye"></i> Setpoint</label>
+        <input type="text" id="node-input-setpoint">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-outMin"><i class="fa fa-arrow-down"></i> Output Min</label>
+        <input type="text" id="node-input-outMin">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-outMax"><i class="fa fa-arrow-up"></i> Output Max</label>
+        <input type="text" id="node-input-outMax">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="originalpid">
+    <p>
+        <b>Original PID</b> – Simple PID controller for Node-RED. Respects original simple PID design with direct tuning.
+    </p>
+    <ul>
+        <li>Derivative term acts on input (not error).</li>
+        <li>Integral term pre-scaled by sample time (Ki × Δt).</li>
+        <li>Anti-windup clamping on the integrated sum.</li>
+        <li>Fixed sample interval (ms).</li>
+    </ul>
+    <p>
+        <b>Inputs:</b><br>
+        <code>msg.payload</code> – Current process variable (e.g. temperature).<br>
+        <br>
+        <b>Outputs:</b><br>
+        <code>msg.payload</code> – PID output (within outMin–outMax).<br>
+        <code>msg.pid</code> – Object with detailed values:<br>
+        { setpoint, input, error, P, I, D, output }.
+    </p>
+    <p>
+        Typical usage:<br>
+        Feed measured value → PID → actuator (PWM, valve, etc.).<br>
+        Adjust Kp, Ki, Kd.
+    </p>
+</script>

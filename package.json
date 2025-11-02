@@ -1,0 +1,37 @@
+{
+  "name": "node-red-contrib-originalpid",
+  "version": "0.1.1",
+  "author": "Martin Hanes",
+  "homepage": "https://github.com/martinhanes/node-red-contrib-originalpid",
+  "description": "A simple and direct PID controller node for Node-RED, following the original Arduino-style PID implementation with Kp, Ki, Kd, and sampleTime.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:martinhanes/node-red-contrib-originalpid.git"
+  },
+  "dependencies": {},
+  "keywords": [
+    "node-red",
+    "pid",
+    "controller",
+    "control",
+    "process",
+    "automation"
+  ],
+  "node-red": {
+    "version": ">=2.0.0",
+    "nodes": {
+      "originalpid": "nodes/originalpid.js"
+    }
+  },
+  "files": [
+    "nodes/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  }
+}
+
