@@ -81,6 +81,7 @@ RED.nodes.registerType('originalpid', {
     <p>
         <b>Inputs:</b><br>
         <code>msg.payload</code> – Current process variable (e.g. temperature).<br>
+        <code>msg.setpoint</code> – Optional. Override the configured target dynamically.<br>
         <br>
         <b>Outputs:</b><br>
         <code>msg.payload</code> – PID output (within outMin–outMax).<br>

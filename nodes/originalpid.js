@@ -51,37 +51,26 @@ module.exports = function (RED) {
             }
         }
 
-
-
-        // let store = 'default'; //use file, if present, otherwise default to default one (usually memory)
-        // const stores = node.context().listStores();
-        //
-        // if (stores && stores.includes(fileStoreName)) {
-        //     store = fileStoreName;
-        // }
-
-        // const saved = node.context().get('pidState', store);
-        // if (saved) {
-        //     node.outputSum = saved.outputSum;
-        //     node.lastInput = saved.lastInput;
-        //     node.lastTime = saved.lastTime;
-        //     node.log(`state loaded from '${store}' store`);
-        // } else {
-        //     node.warn("failed to load state from " + store);
-        // }
-
-        //
-        // //retrieve state if params are changed
-        // const saved = node.context().get('pidState', fileStoreName);
-        // if (saved) {
-        //     node.outputSum = saved.outputSum;
-        //     node.lastInput = saved.lastInput;
-        //     node.lastTime = saved.lastTime;
-        //     node.log("state loaded from persistence");
-        // }
-
         node.on('input', function (msg) {
 
+            if (msg.hasOwnProperty("setpoint")) {
+                const newSetpoint = parseFloat(msg.setpoint);
+                if (!isNaN(newSetpoint)) {
+                    node.setpoint = newSetpoint;
+                    node.log(`Setpoint updated to: ${node.setpoint}`);
+                    node.status({fill: "green", shape: "dot", text: `setpoint set to ${node.setpoint}`});
+
+                    setTimeout(() => {
+                        node.status({
+                            fill: "green",
+                            shape: "dot",
+                            text: 'waiting for next input'
+                        });
+                    }, 3000);
+                } else {
+                    node.warn(`Invalid setpoint value received: ${msg.setpoint}`);
+                }
+            }
 
             // If message requests a restart/reset
             if (msg.reset) {
