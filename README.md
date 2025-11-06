@@ -14,6 +14,7 @@ Unlike other derived versions, this node exposes **Kp**, **Ki**, **Kd**, and **s
 * **True PID** — directly uses Kp, Ki, Kd, and sampleTime
 * **Derivative on input** to avoid setpoint kick
 * **Anti-windup** for stable integral term
+* **Noisy input filtering** for filtering of noisy sensors
 * **Persistent state** between restarts (using Node-RED context)
 * **Manual reset** via `{ "reset": true }` or `{ "restart": true }`
 * **Status indicators:**
@@ -59,5 +60,6 @@ the node automatically restores its state (`outputSum`, `lastInput`, `lastTime`)
 
 ### Version history
 
+**v0.3.0** - Filtering of noisy input capability.
 **v0.2.0** - Changing setpoint by input. 
 **v0.1.0** – Initial version published to github.

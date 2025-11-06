@@ -9,6 +9,7 @@ module.exports = function (RED) {
         node.kd = parseFloat(config.Kd) || 0.0;
         node.sampleTime = parseFloat(config.sampleTime) || 100; // ms
         node.setpoint = parseFloat(config.setpoint) || 0;
+        node.filteringFactor = parseFloat(config.filteringFactor) || 0;
         node.outMin = parseFloat(config.outMin) || 0;
         node.outMax = parseFloat(config.outMax) || 1;
 
@@ -25,7 +26,6 @@ module.exports = function (RED) {
         };
 
         node.SetTunings(node.kp, node.ki, node.kd);
-
 
 
         let storeName = fileStoreName; // try to use file store if user configured
@@ -94,7 +94,7 @@ module.exports = function (RED) {
                     node.status({
                         fill: "green",
                         shape: "dot",
-                        text: 'waiting for next input'
+                        text: 'waiting for the next input'
                     });
                 }, 3000);
 
@@ -113,8 +113,19 @@ module.exports = function (RED) {
             const timeChange = now - node.lastTime;
             if (timeChange < node.sampleTime) return; // too soon
 
-            const error = node.setpoint - input;
-            const dInput = input - node.lastInput;
+
+            //filtering
+            const alpha = 0.5; //replace by node.filteringFactor
+            // node.prevInputFiltered = node.prevInputFiltered ?? input; // input when first run
+            // when filteringFactor == 0, the input is unfiltered
+            // Note: node.lastInput is already filtered. For first run, just use input.
+            // if
+            // let lastInputFiltered = node.lastInput ?? input;
+            let filteredInput = alpha * (node.lastInput ?? input) + (1 - alpha) * input;
+
+
+            const error = node.setpoint - filteredInput;
+            const dInput = filteredInput - node.lastInput;
 
             // Integral
             node.outputSum += (node.ki * error);
@@ -123,21 +134,14 @@ module.exports = function (RED) {
             else if (node.outputSum < node.outMin) node.outputSum = node.outMin;
 
 
-            //
-            //some more filtering can be done by filter:
-            //node.dInputFiltered = 0.9 * (node.dInputFiltered || dInput) + 0.1 * dInput;
-            // output = node.kp * error + node.outputSum - node.kd * node.dInputFiltered;
-            //
-            //
-
             // Calculating output
             // note: Kd is on input, not error, to prevent “derivative kick” when the setpoint changes.
-            let output = node.kp * error + node.outputSum - node.kd * dInput;
+            let output = node.kp * error + node.outputSum - node.kd * filteredInput;
             if (output > node.outMax) output = node.outMax;
             else if (output < node.outMin) output = node.outMin;
 
 
-            node.lastInput = input;
+            node.lastInput = filteredInput;
             node.lastTime = now;
 
             // Payload forming
@@ -150,20 +154,13 @@ module.exports = function (RED) {
                 I: node.outputSum,
                 D: -node.kd * dInput,
                 output,
+                filteredInput,
                 outMin: node.outMin,
                 outMax: node.outMax
             };
             node.send(msg);
 
             node.status({fill: "green", shape: "dot", text: `out=${output.toFixed(2)}, err=${error.toFixed(2)}`});
-
-            // // Save state to node context
-            // node.context().set('pidState', {
-            //     outputSum: node.outputSum,
-            //     lastInput: node.lastInput,
-            //     lastTime: node.lastTime
-            // }, fileStoreName);
-
 
             node.context().set('pidState', {
                 outputSum: node.outputSum,

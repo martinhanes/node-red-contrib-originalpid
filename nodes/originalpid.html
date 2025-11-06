@@ -9,6 +9,7 @@ RED.nodes.registerType('originalpid', {
         Kd: { value: 0.0, validate: RED.validators.number() },
         sampleTime: { value: 100, validate: RED.validators.number() },
         setpoint: { value: 0.0, validate: RED.validators.number() },
+        filteringFactor: { value: 0.0, validate: RED.validators.number() },
         outMin: { value: 0.0, validate: RED.validators.number() },
         outMax: { value: 1.0, validate: RED.validators.number() }
     },
@@ -58,6 +59,11 @@ RED.nodes.registerType('originalpid', {
     </div>
 
     <div class="form-row">
+        <label for="node-input-filteringFactor"><i class="fa fa-sliders"></i> Filtering Factor</label>
+        <input type="text" id="node-input-filteringFactor">
+    </div>
+
+    <div class="form-row">
         <label for="node-input-outMin"><i class="fa fa-arrow-down"></i> Output Min</label>
         <input type="text" id="node-input-outMin">
     </div>
@@ -77,6 +83,7 @@ RED.nodes.registerType('originalpid', {
         <li>Integral term pre-scaled by sample time (Ki × Δt).</li>
         <li>Anti-windup clamping on the integrated sum.</li>
         <li>Fixed sample interval (ms).</li>
+	<li>Filtering of noisy input capability (% of previous value used).</li>
     </ul>
     <p>
         <b>Inputs:</b><br>
@@ -86,7 +93,7 @@ RED.nodes.registerType('originalpid', {
         <b>Outputs:</b><br>
         <code>msg.payload</code> – PID output (within outMin–outMax).<br>
         <code>msg.pid</code> – Object with detailed values:<br>
-        { setpoint, input, error, P, I, D, output }.
+        { setpoint, input, error, P, I, D, filteredInput, output }.
     </p>
     <p>
         Typical usage:<br>
