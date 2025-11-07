@@ -114,15 +114,11 @@ module.exports = function (RED) {
             if (timeChange < node.sampleTime) return; // too soon
 
 
-            //filtering
-            const alpha = 0.5; //replace by node.filteringFactor
-            // node.prevInputFiltered = node.prevInputFiltered ?? input; // input when first run
+            // Filtering
+            const ff = node.filteringFactor;
             // when filteringFactor == 0, the input is unfiltered
             // Note: node.lastInput is already filtered. For first run, just use input.
-            // if
-            // let lastInputFiltered = node.lastInput ?? input;
-            let filteredInput = alpha * (node.lastInput ?? input) + (1 - alpha) * input;
-
+            let filteredInput = ff * (node.lastInput ?? input) + (1 - ff) * input;
 
             const error = node.setpoint - filteredInput;
             const dInput = filteredInput - node.lastInput;
@@ -160,7 +156,7 @@ module.exports = function (RED) {
             };
             node.send(msg);
 
-            node.status({fill: "green", shape: "dot", text: `out=${output.toFixed(2)}, err=${error.toFixed(2)}`});
+            node.status({fill: "green", shape: "dot", text: `sp=${node.setpoint}, err=${error.toFixed(2)}, out=${output.toFixed(2)}`});
 
             node.context().set('pidState', {
                 outputSum: node.outputSum,

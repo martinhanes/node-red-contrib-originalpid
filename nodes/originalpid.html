@@ -17,9 +17,7 @@ RED.nodes.registerType('originalpid', {
     outputs: 1,
     icon: "font-awesome/fa-dashboard",
     label: function() {
-        let label = this.name || "PID";
-        label += ` T=${this.setpoint}`;
-        return label;
+        return this.name || "PID";
     },
     labelStyle: function() {
         return this.name ? "node_label_italic" : "";
@@ -83,7 +81,7 @@ RED.nodes.registerType('originalpid', {
         <li>Integral term pre-scaled by sample time (Ki × Δt).</li>
         <li>Anti-windup clamping on the integrated sum.</li>
         <li>Fixed sample interval (ms).</li>
-	<li>Filtering of noisy input capability (% of previous value used).</li>
+	    <li>Filtering of noisy input capability (% of previous value used).</li>
     </ul>
     <p>
         <b>Inputs:</b><br>

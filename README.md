@@ -60,6 +60,6 @@ the node automatically restores its state (`outputSum`, `lastInput`, `lastTime`)
 
 ### Version history
 
-**v0.3.0** - Filtering of noisy input capability.
-**v0.2.0** - Changing setpoint by input. 
-**v0.1.0** – Initial version published to github.
+* **v0.3.1** - Filtering of noisy input capability. Changed the label and status message.
+* **v0.2.0** - Changing setpoint by input.
+* **v0.1.0** – Initial version published to github.
